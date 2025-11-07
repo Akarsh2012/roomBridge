@@ -27,9 +27,18 @@ export default function Home() {
           <a href="#" className="hover:text-blue-700 transition-transform duration-300 hover:scale-110">Events</a>
           <a href="#" className="hover:text-blue-700 transition-transform duration-300 hover:scale-110">Contact</a>
         </nav>
-        <button className="bg-indigo-900 text-white px-5 py-2 rounded-lg hover:bg-indigo-800 transition">
+        <div className="flex space-x-4">
+          <button className="bg-indigo-900 text-white px-5 py-2 rounded-lg hover:bg-indigo-800 transition">
           Login
         </button>
+        <button className="bg-indigo-900 text-white px-5 py-2 rounded-lg hover:bg-indigo-800 transition">
+          SignUp
+        </button>
+        </div>
+
+
+      
+        
       </header>
 
       {/* Hero Section */}
@@ -96,7 +105,105 @@ export default function Home() {
 
       
 
- 
+     {/* Why Choose Us Section */}
+<section className="relative z-20 -mt-6 flex flex-col items-center text-center">
+  <div className="bg-white shadow-xl rounded-3xl py-10 px-6 max-w-4xl w-[90%]">
+    <h3 className="text-3xl font-bold text-indigo-900 mb-10">
+      Why Choose Us?
+    </h3>
+    <div className="grid md:grid-cols-3 gap-8">
+      {/* Card 1 */}
+      <div className="bg-indigo-50 p-6 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300">
+        <div className="flex flex-col items-center">
+          <div className="bg-indigo-100 p-4 rounded-full mb-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-10 h-10 text-indigo-700"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 12.75L11.25 15L15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <h4 className="text-xl font-semibold text-indigo-900 mb-2">
+            Verified Listings
+          </h4>
+          <p className="text-gray-600">
+            Each property is verified for authenticity to ensure trust and safety.
+          </p>
+        </div>
+      </div>
+
+      {/* Card 2 */}
+      <div className="bg-indigo-50 p-6 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300">
+        <div className="flex flex-col items-center">
+          <div className="bg-indigo-100 p-4 rounded-full mb-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-10 h-10 text-indigo-700"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M8.625 12a.375.375 0 100-.75.375.375 0 000 .75zm6.75 0a.375.375 0 100-.75.375.375 0 000 .75z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 20.25c4.556 0 8.25-2.94 8.25-6.563 0-2.046-1.064-3.84-2.764-5.04a.75.75 0 00-.986.097l-1.37 1.37A7.458 7.458 0 0112 8.25a7.46 7.46 0 01-3.13.865l-1.37-1.37a.75.75 0 00-.986-.097C5.064 9.847 4 11.641 4 13.687c0 3.623 3.694 6.563 8.25 6.563z"
+              />
+            </svg>
+          </div>
+          <h4 className="text-xl font-semibold text-indigo-900 mb-2">
+            Owner–Tenant Chat
+          </h4>
+          <p className="text-gray-600">
+            Connect directly with owners for transparent and easy communication.
+          </p>
+        </div>
+      </div>
+
+      {/* Card 3 */}
+      <div className="bg-indigo-50 p-6 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300">
+        <div className="flex flex-col items-center">
+          <div className="bg-indigo-100 p-4 rounded-full mb-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-10 h-10 text-indigo-700"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 1.5v21m10.5-10.5H1.5"
+              />
+            </svg>
+          </div>
+          <h4 className="text-xl font-semibold text-indigo-900 mb-2">
+            Secure Payments
+          </h4>
+          <p className="text-gray-600">
+            Enjoy hassle-free, safe, and reliable online payment options.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
     
  
 
@@ -244,8 +351,8 @@ export default function Home() {
         </div>
       </section> */}
 
- 
-  <section className="relative h-[75vh] background-color grey flex items-center justify-center text-center text-white" >
+
+  <section className="relative h-[75vh] background-color grey flex items-center justify-center text-center text-white w-full h-full mb-5 mt-5" >
 
       {/* Hero/Search section here */}
       <ConnectSection />
@@ -253,17 +360,7 @@ export default function Home() {
     
 
       {/* Footer */}
-      <footer className=" bg-indigo-900 text-white py-50 text-center mt-100">
-        <div className="flex flex-wrap justify-center space-x-6 mb-6">
-          <a href="#">About Us</a>
-          <a href="#">Careers</a>
-          <a href="#">Press</a>
-          <a href="#">Contact</a>
-        </div>
-        <p className="text-sm text-gray-300">
-          © 2025 RoomBridge. All rights reserved.
-        </p>
-      </footer>
+      
     </main>
   );
 }
