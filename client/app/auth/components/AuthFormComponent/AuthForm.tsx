@@ -1,7 +1,7 @@
 "use client";
-
 import { useState } from "react";
 import { login as loginApi, register as registerApi } from "@/services/auth";
+import styles from "./AuthForm.module.css";
 
 type Mode = "login" | "register";
 
@@ -57,79 +57,80 @@ export default function AuthForm({ mode = "login" }: { mode?: Mode }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="mx-auto w-full max-w-md space-y-4 rounded-lg border bg-white p-6 shadow-sm">
-      <h1 className="text-2xl font-semibold">{isLogin ? "Login" : "Create account"}</h1>
-      <p className="text-sm text-gray-600">
+    <form onSubmit={onSubmit} className={styles.form}>
+      <h1 className={styles.title}>{isLogin ? "Login" : "Create account"}</h1>
+      <p className={styles.subtitle}>
         {isLogin ? "Sign in to continue" : "Register to get started"}
       </p>
 
       {!isLogin && (
-        <div className="space-y-1">
-          <label htmlFor="name" className="text-sm font-medium text-gray-700">Name</label>
+        <div className={styles.field}>
+          <label htmlFor="name" className={styles.label}>
+            Name
+          </label>
           <input
             id="name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded border p-2 focus:outline-none focus:ring"
+            className={styles.input}
             placeholder="Jane Doe"
           />
         </div>
       )}
 
-      <div className="space-y-1">
-        <label htmlFor="email" className="text-sm font-medium text-gray-700">Email</label>
+      <div className={styles.field}>
+        <label htmlFor="email" className={styles.label}>
+          Email
+        </label>
         <input
           id="email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded border p-2 focus:outline-none focus:ring"
+          className={styles.input}
           placeholder="you@example.com"
         />
       </div>
 
-      <div className="space-y-1">
-        <label htmlFor="password" className="text-sm font-medium text-gray-700">Password</label>
+      <div className={styles.field}>
+        <label htmlFor="password" className={styles.label}>
+          Password
+        </label>
         <input
           id="password"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded border p-2 focus:outline-none focus:ring"
+          className={styles.input}
           placeholder="••••••••"
         />
       </div>
 
       {!isLogin && (
-        <div className="space-y-1">
-          <label htmlFor="confirm" className="text-sm font-medium text-gray-700">Confirm Password</label>
+        <div className={styles.field}>
+          <label htmlFor="confirm" className={styles.label}>
+            Confirm Password
+          </label>
           <input
             id="confirm"
             type="password"
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
-            className="w-full rounded border p-2 focus:outline-none focus:ring"
+            className={styles.input}
             placeholder="••••••••"
           />
         </div>
       )}
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      {success && <p className="text-sm text-green-600">{success}</p>}
+      {error && <p className={`${styles.feedback} ${styles.error}`}>{error}</p>}
+      {success && <p className={`${styles.feedback} ${styles.success}`}>{success}</p>}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full rounded bg-blue-600 py-2 font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
-      >
+      <button type="submit" disabled={loading} className={styles.button}>
         {loading ? (isLogin ? "Signing in..." : "Creating account...") : isLogin ? "Sign in" : "Create account"}
       </button>
 
-      <p className="text-center text-xs text-gray-500">
-        Demo login: demo@roombridge.app / password
-      </p>
+      <p className={styles.hint}>Demo login: demo@roombridge.app / password</p>
     </form>
   );
 }
-

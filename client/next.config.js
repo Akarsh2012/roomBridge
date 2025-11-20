@@ -2,17 +2,19 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['cdn-icons-png.flaticon.com'], // 👈 Add allowed image hostnames here
-  },
-
-   images: {
-    domains: [
-      "cdn-icons-png.flaticon.com",
-      "images.unsplash.com",
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'cdn-icons-png.flaticon.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '/**',
+      },
     ],
   },
-
 };
 
 module.exports = nextConfig;
-
