@@ -8,7 +8,7 @@ node_modules/
 out/
 .vercel/
 
-# Env files
+# Env files (NEVER push these — contain secrets)
 .env
 .env.local
 .env.*.local
@@ -27,13 +27,26 @@ build/
 coverage/
 *.tsbuildinfo
 
+# Prisma generated client (auto-generated, not needed in repo)
+**/src/generated/
+
 # Editor/OS
 .DS_Store
 .idea/
 .vscode/
 *.swp
 
+# Debug screenshots (images dropped in src folders for debugging)
+**/src/**/*.png
+**/src/**/*.jpg
+**/app/**/*.png
+**/app/**/*.jpg
+!**/public/**
+
+# Claude internal
+.claude/
+ClaudeHistory/
+
 # Misc
 tmp/
 cache/
-

@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────
+
+enum Role {
+  GUEST
+  HOST
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+// ─── User ────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  password      String
+  name          String
+  role          Role     @default(GUEST)
+  avatar        String?
+  phone         String?
+  bio           String?
+  emailVerified Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  rooms         Room[]
+  bookings      Booking[]
+  reviews       Review[]
+  refreshTokens RefreshToken[]
+  otps          Otp[]
+}
+
+// ─── Refresh Token ───────────────────────────────────
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+// ─── OTP ─────────────────────────────────────────────
+
+model Otp {
+  id        String   @id @default(uuid())
+  code      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+// ─── Room ────────────────────────────────────────────
+
+model Room {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  price       Float
+  location    String
+  address     String?
+  city        String
+  country     String   @default("India")
+  maxGuests   Int      @default(2)
+  bedrooms    Int      @default(1)
+  bathrooms   Int      @default(1)
+  amenities   String[] @default([])
+  images      String[] @default([])
+  isActive    Boolean  @default(true)
+  hostId      String
+  host        User     @relation(fields: [hostId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  bookings Booking[]
+  reviews  Review[]
+}
+
+// ─── Booking ─────────────────────────────────────────
+
+model Booking {
+  id         String        @id @default(uuid())
+  checkIn    DateTime
+  checkOut   DateTime
+  guests     Int
+  totalPrice Float
+  status     BookingStatus @default(PENDING)
+  roomId     String
+  room       Room          @relation(fields: [roomId], references: [id])
+  guestId    String
+  guest      User          @relation(fields: [guestId], references: [id])
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+// ─── Review ──────────────────────────────────────────
+
+model Review {
+  id        String   @id @default(uuid())
+  rating    Int
+  comment   String
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}

@@ -1,0 +1,117 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: overlayIn 0.25s ease forwards;
+}
+
+/* Initial load — no page behind, so use solid white */
+.overlayInitial {
+  background: #ffffff;
+  backdrop-filter: none;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2.5rem 3rem;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.8);
+  animation: contentIn 0.3s ease forwards;
+}
+
+/* Logo */
+.logoContainer {
+  width: 56px;
+  height: 56px;
+  border-radius: 0.875rem;
+  background: linear-gradient(135deg, #312e81, #4f46e5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse 2s ease-in-out infinite;
+  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+}
+
+.logo {
+  width: 30px;
+  height: 30px;
+  color: #ffffff;
+}
+
+/* Brand name */
+.brand {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #312e81;
+  letter-spacing: -0.025em;
+}
+
+/* Spinner bar */
+.spinnerTrack {
+  width: 140px;
+  height: 3px;
+  background: rgba(79, 70, 229, 0.12);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.spinnerBar {
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, #312e81, #4f46e5, #818cf8);
+  border-radius: 999px;
+  animation: slide 1.2s ease-in-out infinite;
+}
+
+@keyframes slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(250%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 12px 28px rgba(79, 70, 229, 0.4);
+  }
+}
+
+@keyframes overlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes contentIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
