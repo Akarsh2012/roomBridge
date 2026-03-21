@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
-import authRoutes from "./routes/auth.routes";
-import userRoutes from "./routes/user.routes";
+import moduleRouter from "./modules/router";
 import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
@@ -14,9 +13,8 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", message: "RoomBridge API is running" });
 });
 
-// Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
+// All module routes under /api
+app.use("/api", moduleRouter);
 
 // Global error handler (must be last)
 app.use(errorHandler);
