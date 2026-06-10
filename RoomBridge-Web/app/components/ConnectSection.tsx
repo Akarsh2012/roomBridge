@@ -2,77 +2,75 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
+
+const cards = [
+  {
+    tag: "For hosts",
+    img: "/owner.png",
+    title: "List your space, reach the right guests",
+    body: "Publish a listing in minutes, manage inquiries in one place, and earn from your spare room — with verified guests only.",
+    cta: "Become a host",
+  },
+  {
+    tag: "For guests",
+    img: "/tenant.png",
+    title: "Discover a stay that actually fits",
+    body: "Browse curated listings, message hosts directly, and lock in your perfect room or apartment — no surprises at check-in.",
+    cta: "Find your stay",
+  },
+];
 
 export default function ConnectSection() {
   return (
-    <section className="bg-gray-50 py-20 px-6 sm:px-12 lg:px-24">
-      <div className="max-w-4xl mx-auto text-center mb-12">
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-brand-primary mb-4">
-          Seamlessly Connect. <br className="hidden sm:block" /> Perfectly Match.
-        </h2>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Find your next tenant or your ideal home with our intuitive platform.
-        </p>
+    <section className="mx-auto max-w-7xl px-5 py-24 md:px-8">
+      <div className="mb-12 flex items-center gap-4">
+        <span className="eyebrow">05</span>
+        <span className="h-px flex-1 bg-line" />
+        <span className="font-mono text-xs uppercase tracking-[0.2em] text-muted">Two sides, one platform</span>
       </div>
 
-      <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Owner Card */}
-        <article className="bg-white rounded-2xl shadow-lg overflow-hidden hover:-translate-y-1 transition-all duration-300 flex flex-col">
-          <div className="relative w-full h-64 sm:h-72 md:h-64 lg:h-72">
-            <Image
-              src="/owner.png"
-              alt="Property Owner"
-              fill
-              className="object-cover"
-              priority
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
-          </div>
-          <div className="p-6 flex flex-col flex-1">
-            <h3 className="text-xl font-semibold text-brand-primary mb-2">
-              Property Owners: List Your Space
-            </h3>
-            <p className="text-gray-600 mb-4">
-              Reach qualified tenants quickly and easily. Manage listings,
-              inquiries, and applications all in one place.
-            </p>
-            <Link
-              href="/auth/signup?role=host"
-              className="mt-auto inline-block bg-brand-secondary text-white font-medium py-2.5 px-5 rounded-lg hover:bg-brand-primary transition"
-            >
-              Get Started as an Owner
-            </Link>
-          </div>
-        </article>
+      <h2 className="mb-12 max-w-2xl font-display text-[clamp(2rem,4.5vw,3.5rem)] font-bold leading-[1.02] tracking-tight text-balance">
+        Whichever side you&apos;re on, RoomBridge has you covered.
+      </h2>
 
-        {/* Tenant Card */}
-        <article className="bg-white rounded-2xl shadow-lg overflow-hidden hover:-translate-y-1 transition-all duration-300 flex flex-col">
-          <div className="relative w-full h-64 sm:h-72 md:h-64 lg:h-72">
-            <Image
-              src="/tenant.png"
-              alt="Tenant"
-              fill
-              className="object-cover"
-              priority
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
-          </div>
-          <div className="p-6 flex flex-col flex-1">
-            <h3 className="text-xl font-semibold text-brand-primary mb-2">
-              Tenants: Discover Your Next Home
-            </h3>
-            <p className="text-gray-600 mb-4">
-              Browse curated listings, connect with landlords, and secure your
-              perfect room or apartment.
-            </p>
-            <Link
-              href="/auth/signup?role=guest"
-              className="mt-auto inline-block bg-brand-secondary text-white font-medium py-2.5 px-5 rounded-lg hover:bg-brand-primary transition"
-            >
-              Find Your New Home
-            </Link>
-          </div>
-        </article>
+      <div className="grid gap-5 md:grid-cols-2">
+        {cards.map((c, i) => (
+          <motion.article
+            key={c.tag}
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: i * 0.1, ease: [0.22, 0.61, 0.36, 1] }}
+            className="lift group relative flex flex-col overflow-hidden rounded-3xl border border-line bg-ink-2"
+          >
+            <div className="relative h-60 overflow-hidden md:h-72">
+              <Image
+                src={c.img}
+                alt={c.tag}
+                fill
+                className="object-cover opacity-90 transition-transform duration-700 group-hover:scale-105"
+                sizes="(max-width:768px) 100vw, 50vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink-2 via-ink-2/30 to-transparent" />
+              <span className="eyebrow absolute left-5 top-5 rounded-full bg-ink/80 px-3 py-1.5 ring-1 ring-line backdrop-blur-md">
+                {c.tag}
+              </span>
+            </div>
+
+            <div className="flex flex-1 flex-col p-7">
+              <h3 className="font-display text-2xl font-semibold leading-tight">{c.title}</h3>
+              <p className="mt-3 text-muted">{c.body}</p>
+              <Link
+                href="/auth/signup"
+                className="btn-amber mt-7 w-fit px-6 py-3 text-sm"
+              >
+                {c.cta}
+                <span aria-hidden>→</span>
+              </Link>
+            </div>
+          </motion.article>
+        ))}
       </div>
     </section>
   );

@@ -8,21 +8,20 @@ import { sendOtpEmail } from "../../utils/sendEmails";
 
 // ─── Validation Schemas ──────────────────────────────
 
-export const registerSchema = z.object({
+const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.email("Invalid email"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  role: z.enum(["GUEST", "HOST"]).optional(),
 });
 
-export const loginSchema = z.object({
+const loginSchema = z.object({
   email: z.email("Invalid email"),
   password: z.string().min(1, "Password is required"),
 });
 
-// ─── Helper: Generate & Store Tokens ─────────────────
+// ─── Helper Functions ────────────────────────────────
 
-export const generateTokens = async (userId: string, role: string) => {
+async function generateTokens(userId: string, role: string) {
   const accessToken = generateAccessToken({ userId, role });
   const refreshToken = generateRefreshToken({ userId, role });
 
@@ -35,11 +34,9 @@ export const generateTokens = async (userId: string, role: string) => {
   });
 
   return { accessToken, refreshToken };
-};
+}
 
-// ─── Auto-send OTP helper ────────────────────────────
-
-export const autoSendOtp = async (userId: string, email: string, name: string) => {
+async function autoSendOtp(userId: string, email: string, name: string) {
   try {
     await prisma.otp.deleteMany({ where: { userId } });
     const otp = generateOtp();
@@ -57,17 +54,17 @@ export const autoSendOtp = async (userId: string, email: string, name: string) =
   } catch (err) {
     console.error(`[OTP] Failed to send OTP:`, err);
   }
-};
+}
 
 // ─── Service Functions ───────────────────────────────
 
-export const registerUser = async (body: unknown) => {
+async function registerUser(body: unknown) {
   const parsed = registerSchema.safeParse(body);
   if (!parsed.success) {
     throw new AppError(parsed.error.issues[0].message, 400);
   }
 
-  const { name, email, password, role } = parsed.data;
+  const { name, email, password } = parsed.data;
 
   const existingUser = await prisma.user.findUnique({ where: { email } });
   if (existingUser) {
@@ -76,7 +73,7 @@ export const registerUser = async (body: unknown) => {
 
   const hashed = await hashPassword(password);
   const user = await prisma.user.create({
-    data: { name, email, password: hashed, role: role || "GUEST" },
+    data: { name, email, password: hashed },
   });
 
   const tokens = await generateTokens(user.id, user.role);
@@ -93,9 +90,9 @@ export const registerUser = async (body: unknown) => {
     accessToken: tokens.accessToken,
     refreshToken: tokens.refreshToken,
   };
-};
+}
 
-export const loginUser = async (body: unknown) => {
+async function loginUser(body: unknown) {
   const parsed = loginSchema.safeParse(body);
   if (!parsed.success) {
     throw new AppError(parsed.error.issues[0].message, 400);
@@ -126,9 +123,9 @@ export const loginUser = async (body: unknown) => {
     accessToken: tokens.accessToken,
     refreshToken: tokens.refreshToken,
   };
-};
+}
 
-export const refreshTokens = async (refreshToken: string) => {
+async function refreshTokens(refreshToken: string) {
   if (!refreshToken) throw new AppError("Refresh token is required", 400);
 
   let decoded;
@@ -156,14 +153,14 @@ export const refreshTokens = async (refreshToken: string) => {
     accessToken: tokens.accessToken,
     refreshToken: tokens.refreshToken,
   };
-};
+}
 
-export const logoutUser = async (refreshToken: string) => {
+async function logoutUser(refreshToken: string) {
   if (!refreshToken) throw new AppError("Refresh token is required", 400);
   await prisma.refreshToken.deleteMany({ where: { token: refreshToken } });
-};
+}
 
-export const getMe = async (userId: string) => {
+async function getMe(userId: string) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
@@ -180,4 +177,16 @@ export const getMe = async (userId: string) => {
 
   if (!user) throw new AppError("User not found", 404);
   return user;
+}
+
+// ─── Exports ─────────────────────────────────────────
+
+module.exports = {
+  registerUser,
+  loginUser,
+  refreshTokens,
+  logoutUser,
+  getMe,
 };
+
+export { registerUser, loginUser, refreshTokens, logoutUser, getMe };

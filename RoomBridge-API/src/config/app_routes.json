@@ -1,0 +1,47 @@
+{
+  "modules": {
+    "auth": {
+      "routes": {
+        "REGISTER": "/register",
+        "LOGIN": "/login",
+        "REFRESH": "/refresh",
+        "LOGOUT": "/logout",
+        "ME": "/me"
+      }
+    },
+    "otp": {
+      "routes": {
+        "SEND_OTP": "/send-otp",
+        "VERIFY_OTP": "/verify-otp"
+      }
+    },
+    "room": {
+      "routes": {
+        "CREATE_ROOM": "/",
+        "GET_ALL_ROOMS": "/",
+        "GET_MY_LISTINGS": "/my-listings",
+        "GET_ROOM_BY_ID": "/:id",
+        "UPDATE_ROOM": "/:id",
+        "DELETE_ROOM": "/:id",
+        "UPLOAD_IMAGES": "/:id/images"
+      }
+    },
+    "booking": {
+      "routes": {
+        "CREATE_BOOKING": "/",
+        "GET_MY_BOOKINGS": "/my-bookings",
+        "GET_HOST_BOOKINGS": "/host-bookings",
+        "GET_BOOKING_BY_ID": "/:id",
+        "UPDATE_BOOKING_STATUS": "/:id/status",
+        "CHECK_AVAILABILITY": "/rooms/:roomId/availability"
+      }
+    },
+    "review": {
+      "routes": {
+        "CREATE_REVIEW": "/rooms/:roomId/reviews",
+        "GET_ROOM_REVIEWS": "/rooms/:roomId/reviews",
+        "DELETE_REVIEW": "/:id"
+      }
+    }
+  }
+}

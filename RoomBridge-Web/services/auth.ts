@@ -1,7 +1,7 @@
 import api from "./api";
 
 export type LoginPayload = { email: string; password: string };
-export type RegisterPayload = { name: string; email: string; password: string; role?: string };
+export type RegisterPayload = { name: string; email: string; password: string };
 
 export type User = {
   id: string;
@@ -37,11 +37,6 @@ export async function getMe(): Promise<User> {
 
 export async function logout(refreshToken: string): Promise<void> {
   await api.post("/auth/logout", { refreshToken });
-}
-
-export async function becomeHost(): Promise<AuthResponse> {
-  const { data } = await api.patch("/users/become-host");
-  return data.data;
 }
 
 export async function sendOtp(): Promise<{ expiresIn: number; cooldown: number }> {

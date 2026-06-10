@@ -1,15 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import ThemeToggle from "@/components/common/ThemeToggle";
+
+function Mark() {
+  return (
+    <span className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-ink-3 ring-1 ring-line-strong">
+      <span className="absolute inset-0 rounded-xl bg-amber/20 blur-md" aria-hidden />
+      <svg viewBox="0 0 24 24" fill="none" className="relative h-5 w-5 text-amber">
+        <path d="M3 21V9L12 3L21 9V21H15V14H9V21H3Z" fill="currentColor" />
+      </svg>
+    </span>
+  );
+}
 
 export default function Navbar() {
-  const { user, isAuthenticated, logout, becomeHost } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const router = useRouter();
-  const [upgrading, setUpgrading] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 16);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -17,75 +36,44 @@ export default function Navbar() {
     router.push("/");
   };
 
-  const handleBecomeHost = async () => {
-    setUpgrading(true);
-    try {
-      await becomeHost();
-    } catch {
-      // error handled silently
-    } finally {
-      setUpgrading(false);
-    }
-  };
-
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-gray-100 bg-white/95 backdrop-blur-md shadow-sm">
-      <nav className="flex items-center justify-between px-6 md:px-10 lg:px-16 py-3">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-primary to-brand-secondary flex items-center justify-center shadow-md shadow-indigo-200 group-hover:shadow-lg group-hover:shadow-indigo-300 transition-shadow">
-            <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-white">
-              <path d="M3 21V9L12 3L21 9V21H15V14H9V21H3Z" fill="currentColor" />
-            </svg>
-          </div>
-          <span className="text-xl font-bold bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-transparent">
-            RoomBridge
+    <header className="sticky top-0 z-40 px-3 pt-3 md:pt-4">
+      <nav
+        className={`mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-full border py-2 pl-3 pr-2 transition-all duration-500 ${
+          scrolled
+            ? "border-line bg-ink-2/80 shadow-lg backdrop-blur-xl"
+            : "border-line/70 bg-ink-2/55 shadow-md backdrop-blur-xl"
+        }`}
+      >
+        <Link href="/" className="group flex items-center gap-2.5 pl-1">
+          <Mark />
+          <span className="font-display text-lg font-semibold tracking-tight text-paper">
+            Room<span className="text-amber">Bridge</span>
           </span>
         </Link>
 
-        {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-2">
-          <Link
-            href="/rooms"
-            className="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-brand-primary hover:bg-brand-light transition-all"
-          >
-            Rooms
-          </Link>
+        {/* Desktop links group */}
+        <div className="hidden items-center gap-0.5 rounded-full border border-line bg-ink/40 p-1 lg:flex">
+          <NavLink href="/rooms">Stays</NavLink>
+          {isAuthenticated && <NavLink href="/rooms/new">List a room</NavLink>}
+        </div>
 
+        {/* Desktop actions */}
+        <div className="hidden items-center gap-2 md:flex">
+          <ThemeToggle />
           {isAuthenticated ? (
             <>
-              {(user?.role === "HOST" || user?.role === "ADMIN") && (
-                <Link
-                  href="/rooms/new"
-                  className="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-brand-primary hover:bg-brand-light transition-all"
-                >
-                  List a Room
-                </Link>
-              )}
-              {user?.role === "GUEST" && (
-                <button
-                  onClick={handleBecomeHost}
-                  disabled={upgrading}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-sm shadow-emerald-200 hover:shadow-md transition-all disabled:opacity-50"
-                >
-                  {upgrading ? "Upgrading..." : "Become a Host"}
-                </button>
-              )}
-
-              {/* User badge */}
-              <div className="flex items-center gap-2 ml-2 pl-3 border-l border-gray-200">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-primary to-brand-secondary flex items-center justify-center text-white text-xs font-bold shadow-sm">
+              <div className="flex items-center gap-2.5 rounded-full border border-line bg-ink-3/60 py-1 pl-1 pr-3">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-amber text-[11px] font-bold text-ink">
                   {user?.name?.charAt(0).toUpperCase()}
-                </div>
-                <div className="hidden lg:block">
-                  <p className="text-sm font-semibold text-gray-800 leading-tight">{user?.name}</p>
-                  <p className="text-[11px] font-medium text-brand-secondary leading-tight">{user?.role}</p>
-                </div>
+                </span>
+                <span className="hidden text-sm font-medium text-paper lg:block">
+                  {user?.name?.split(" ")[0]}
+                </span>
               </div>
-
               <button
                 onClick={handleLogout}
-                className="ml-1 px-3 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-red-600 hover:bg-red-50 transition-all"
+                className="rounded-full px-3 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors hover:bg-ink-3/70 hover:text-paper"
               >
                 Logout
               </button>
@@ -94,103 +82,110 @@ export default function Navbar() {
             <>
               <Link
                 href="/auth/signin"
-                className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-brand-primary hover:bg-brand-light transition-all"
+                className="rounded-full px-4 py-2 text-sm font-medium text-muted transition-colors hover:bg-ink-3/70 hover:text-paper"
               >
-                Login
+                Sign in
               </Link>
-              <Link
-                href="/auth/signup"
-                className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-gradient-to-r from-brand-primary to-brand-secondary hover:from-brand-dark hover:to-brand-primary shadow-sm shadow-indigo-200 hover:shadow-md transition-all"
-              >
-                Sign up
+              <Link href="/auth/signup" className="btn-amber group px-5 py-2.5 text-sm">
+                Get started
+                <svg className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-6-6l6 6-6 6" />
+                </svg>
               </Link>
             </>
           )}
         </div>
 
-        {/* Mobile hamburger */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition"
-          aria-label="Toggle menu"
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        {/* Mobile controls */}
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="rounded-full border border-line bg-ink-3/60 p-2.5 text-paper"
+            aria-label="Toggle menu"
+          >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             {menuOpen ? (
               <path strokeLinecap="round" d="M6 6l12 12M6 18L18 6" />
             ) : (
-              <path strokeLinecap="round" d="M4 6h16M4 12h16M4 18h16" />
+              <path strokeLinecap="round" d="M4 7h16M4 12h16M4 17h16" />
             )}
           </svg>
-        </button>
+          </button>
+        </div>
       </nav>
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden border-t bg-white px-4 py-3 space-y-1 text-sm shadow-lg">
-          <Link
-            href="/rooms"
-            onClick={() => setMenuOpen(false)}
-            className="block py-2.5 px-3 rounded-lg text-gray-600 hover:text-brand-primary hover:bg-brand-light transition"
-          >
-            Rooms
-          </Link>
-
+        <div className="mx-auto mt-2 max-w-6xl space-y-1 rounded-2xl border border-line bg-ink-2/90 p-3 shadow-xl backdrop-blur-xl md:hidden">
+          <MobileLink href="/rooms" onClick={() => setMenuOpen(false)}>Stays</MobileLink>
           {isAuthenticated ? (
             <>
-              {(user?.role === "HOST" || user?.role === "ADMIN") && (
-                <Link
-                  href="/rooms/new"
-                  onClick={() => setMenuOpen(false)}
-                  className="block py-2.5 px-3 rounded-lg text-gray-600 hover:text-brand-primary hover:bg-brand-light transition"
-                >
-                  List a Room
-                </Link>
-              )}
-              {user?.role === "GUEST" && (
-                <button
-                  onClick={() => { handleBecomeHost(); setMenuOpen(false); }}
-                  disabled={upgrading}
-                  className="w-full text-left py-2.5 px-3 rounded-lg text-emerald-600 font-medium hover:bg-emerald-50 transition"
-                >
-                  {upgrading ? "Upgrading..." : "Become a Host"}
-                </button>
-              )}
-              <div className="flex items-center gap-3 py-3 px-3 mt-1 border-t border-gray-100">
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-primary to-brand-secondary flex items-center justify-center text-white text-sm font-bold">
+              <MobileLink href="/rooms/new" onClick={() => setMenuOpen(false)}>List a room</MobileLink>
+              <div className="mt-2 flex items-center gap-3 border-t border-line py-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-amber text-sm font-bold text-ink">
                   {user?.name?.charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-800">{user?.name}</p>
-                  <p className="text-xs text-brand-secondary">{user?.role}</p>
-                </div>
+                </span>
+                <span className="font-medium text-paper">{user?.name}</span>
               </div>
               <button
                 onClick={handleLogout}
-                className="w-full text-left py-2.5 px-3 rounded-lg text-red-600 font-medium hover:bg-red-50 transition"
+                className="w-full rounded-xl px-4 py-2.5 text-left font-mono text-xs uppercase tracking-[0.18em] text-muted transition-colors hover:bg-ink-3/70 hover:text-paper"
               >
                 Logout
               </button>
             </>
           ) : (
-            <div className="flex gap-2 pt-2 border-t border-gray-100">
+            <div className="flex gap-2 pt-2">
               <Link
                 href="/auth/signin"
                 onClick={() => setMenuOpen(false)}
-                className="flex-1 text-center py-2.5 rounded-lg border border-gray-200 font-medium text-gray-600 hover:bg-gray-50 transition"
+                className="btn-ghost flex-1 py-2.5 text-sm"
               >
-                Login
+                Sign in
               </Link>
               <Link
                 href="/auth/signup"
                 onClick={() => setMenuOpen(false)}
-                className="flex-1 text-center py-2.5 rounded-lg font-medium text-white bg-gradient-to-r from-brand-primary to-brand-secondary transition"
+                className="btn-amber flex-1 py-2.5 text-sm"
               >
-                Sign up
+                Get started
               </Link>
             </div>
           )}
         </div>
       )}
     </header>
+  );
+}
+
+function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="rounded-full px-4 py-1.5 text-sm font-medium text-muted transition-colors hover:bg-ink-3/70 hover:text-paper"
+    >
+      {children}
+    </Link>
+  );
+}
+
+function MobileLink({
+  href,
+  children,
+  onClick,
+}: {
+  href: string;
+  children: React.ReactNode;
+  onClick: () => void;
+}) {
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className="block rounded-xl px-4 py-2.5 text-base font-medium text-paper transition-colors hover:bg-ink-3/70"
+    >
+      {children}
+    </Link>
   );
 }

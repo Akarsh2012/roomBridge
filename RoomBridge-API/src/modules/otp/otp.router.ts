@@ -1,27 +1,38 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../../middleware/auth";
+import { apiResponseHandler } from "../../utils/apiResponseHandler";
 import * as otpService from "./otp.service";
+const otpRoutes = require("../../config/app_routes.json").modules.otp.routes;
 
 const router = Router();
 
-// POST /api/auth/send-otp
-router.post("/send-otp", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+// ─── Route Definitions ───────────────────────────────
+
+router.post(otpRoutes.SEND_OTP, authenticate, sendOtp, apiResponseHandler);
+router.post(otpRoutes.VERIFY_OTP, authenticate, verifyOtp, apiResponseHandler);
+
+// ─── Handler Functions ───────────────────────────────
+
+async function sendOtp(req: Request, res: Response, next: NextFunction) {
   try {
-    const result = await otpService.sendOtpToUser(req.user!.userId);
-    res.json({ success: true, message: "OTP sent to your email", data: result });
+    res.dataObject = {
+      message: "OTP sent to your email",
+      data: await otpService.sendOtpToUser(req.user!.userId),
+    };
+    next();
   } catch (err) {
     next(err);
   }
-});
+}
 
-// POST /api/auth/verify-otp
-router.post("/verify-otp", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+async function verifyOtp(req: Request, res: Response, next: NextFunction) {
   try {
     await otpService.verifyUserOtp(req.user!.userId, req.body.otp);
-    res.json({ success: true, message: "Email verified successfully" });
+    res.dataObject = { message: "Email verified successfully" };
+    next();
   } catch (err) {
     next(err);
   }
-});
+}
 
 export default router;

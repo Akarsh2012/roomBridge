@@ -1,7 +1,6 @@
 import { Router } from "express";
 import authRouter from "./auth/auth.router";
 import otpRouter from "./otp/otp.router";
-import userRouter from "./user/user.router";
 
 const router = Router();
 
@@ -10,7 +9,6 @@ const router = Router();
 
 router.use("/auth", authRouter);
 router.use("/auth", otpRouter);       // OTP routes under /api/auth (send-otp, verify-otp)
-router.use("/users", userRouter);
 
 // Phase 2: router.use("/rooms", roomRouter);
 // Phase 3: router.use("/bookings", bookingRouter);

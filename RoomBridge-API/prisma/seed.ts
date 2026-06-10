@@ -13,7 +13,7 @@ async function main() {
 
   const password = await bcrypt.hash("password123", 10);
 
-  // Create users (one per role)
+  // Create users
   const admin = await prisma.user.create({
     data: {
       name: "Admin User",
@@ -29,7 +29,6 @@ async function main() {
       name: "Rahul Sharma",
       email: "rahul@roombridge.com",
       password,
-      role: "HOST",
       bio: "Property owner in Mumbai with 5 years of hosting experience",
       phone: "+91-9876543210",
     },
@@ -40,7 +39,6 @@ async function main() {
       name: "Priya Patel",
       email: "priya@roombridge.com",
       password,
-      role: "HOST",
       bio: "Superhost managing premium properties across Goa",
       phone: "+91-9876543211",
     },
@@ -51,7 +49,6 @@ async function main() {
       name: "Akarsh Guest",
       email: "guest@roombridge.com",
       password,
-      role: "GUEST",
       bio: "Love traveling and exploring new places",
     },
   });

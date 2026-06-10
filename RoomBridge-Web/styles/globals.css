@@ -1,17 +1,248 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --brand-primary: #312e81;
-  --brand-secondary: #4f46e5;
-  --brand-accent: #2563eb;
+/* ─────────────────────────────────────────────────────────────
+   RoomBridge — themeable design system
+   Two themes share one token contract (semantic roles):
+     ink   = canvas / background      paper = foreground text
+     ink-2..4 = raised surfaces       amber = single accent
+   Color tokens are RGB channel triplets so Tailwind's
+   `rgb(var(--x) / <alpha-value>)` opacity modifiers keep working.
+   Theme is selected via [data-theme] on <html> (see app/layout.tsx).
+
+   • Light  = "Warm Editorial Luxe"  (cream + warm ink + terracotta)
+   • Dark   = "Dark Modern Premium"  (charcoal + paper + amber gold)
+   ───────────────────────────────────────────────────────────── */
+
+:root,
+[data-theme="light"] {
+  /* Warm Editorial Luxe — cream canvas, warm ink, terracotta accent
+     (the original light theme; restored per request) */
+  --ink: 246 241 233;     /* warm cream canvas */
+  --ink-2: 252 250 244;   /* lifted card surface */
+  --ink-3: 239 231 216;   /* sand band / chip */
+  --ink-4: 227 217 199;   /* strongest surface */
+
+  --paper: 28 26 23;      /* warm near-black ink */
+  --muted: 110 106 98;
+  --faint: 152 147 138;
+
+  --amber: 181 83 42;     /* terracotta accent */
+  --amber-hi: 201 102 59; /* lighter clay (hover) */
+  --amber-deep: 151 67 31;
+
+  --line: rgba(28, 26, 23, 0.12);
+  --line-strong: rgba(28, 26, 23, 0.2);
+  --glass: rgba(255, 255, 255, 0.55);
+  --glass-strong: rgba(255, 255, 255, 0.78);
+
+  --btn-amber-fg: #fbf7ef;
+  --grain-blend: multiply;
+  --grain-opacity: 0.05;
+  --glow-alpha: 0.2;
+
+  --shadow-card: 0 1px 2px rgba(28, 26, 23, 0.04),
+    0 10px 26px -14px rgba(28, 26, 23, 0.14);
+  --shadow-card-hover: 0 4px 10px rgba(28, 26, 23, 0.06),
+    0 22px 46px -18px rgba(181, 83, 42, 0.24);
+  color-scheme: light;
 }
 
-html, body {
+[data-theme="dark"] {
+  /* cool graphite grey — clearly grey, not pure black */
+  --ink: 32 34 40;       /* #202228 */
+  --ink-2: 41 44 52;     /* #292c34 */
+  --ink-3: 52 56 66;     /* #343842 */
+  --ink-4: 66 71 82;     /* #424752 */
+
+  --paper: 245 243 238;
+  --muted: 170 167 161;
+  --faint: 124 121 115;
+
+  --amber: 232 163 61;
+  --amber-hi: 243 188 99;
+  --amber-deep: 200 130 31;
+
+  --line: rgba(245, 243, 238, 0.11);
+  --line-strong: rgba(245, 243, 238, 0.2);
+  --glass: rgba(245, 243, 238, 0.06);
+  --glass-strong: rgba(245, 243, 238, 0.09);
+
+  --btn-amber-fg: #17120a;
+  --grain-blend: overlay;
+  --grain-opacity: 0.03;
+  --glow-alpha: 0.42;
+
+  --shadow-card: 0 1px 0 rgba(245, 243, 238, 0.03);
+  --shadow-card-hover: 0 24px 50px -20px rgba(0, 0, 0, 0.6);
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
   padding: 0;
   margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: rgb(var(--ink));
+  color: rgb(var(--paper));
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+::selection {
+  background: rgb(var(--amber));
+  color: var(--btn-amber-fg);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: rgb(var(--ink));
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--ink-4));
+  border-radius: 999px;
+  border: 2px solid rgb(var(--ink));
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--amber) / 0.6);
+}
+
+/* ── Film grain overlay ──────────────────────────────────────── */
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  opacity: var(--grain-opacity);
+  mix-blend-mode: var(--grain-blend);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
+}
+
+@layer components {
+  .eyebrow {
+    font-family: var(--font-mono), monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgb(var(--amber));
+  }
+
+  .glass {
+    background: var(--glass);
+    border: 1px solid var(--line);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .btn-amber {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    background: linear-gradient(
+      180deg,
+      rgb(var(--amber-hi)) 0%,
+      rgb(var(--amber)) 55%,
+      rgb(var(--amber-deep)) 100%
+    );
+    color: var(--btn-amber-fg);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    box-shadow: 0 1px 0 0 rgb(255 255 255 / 0.22) inset,
+      0 6px 18px -8px rgb(var(--amber) / 0.55);
+    transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+      box-shadow 0.4s ease, filter 0.3s ease;
+  }
+  .btn-amber:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1.5px);
+    box-shadow: 0 1px 0 0 rgb(255 255 255 / 0.28) inset,
+      0 16px 40px -10px rgb(var(--amber) / 0.6);
+  }
+  .btn-amber:active {
+    transform: translateY(0);
+    filter: brightness(0.98);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    color: rgb(var(--paper));
+    background: rgb(var(--ink-2) / 0.5);
+    transition: border-color 0.3s ease, background 0.3s ease,
+      box-shadow 0.3s ease, transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .btn-ghost:hover {
+    border-color: rgb(var(--amber) / 0.55);
+    color: rgb(var(--amber));
+    background: rgb(var(--amber) / 0.07);
+    transform: translateY(-1.5px);
+    box-shadow: 0 10px 26px -14px rgb(var(--paper) / 0.3);
+  }
+
+  .glow {
+    position: absolute;
+    border-radius: 999px;
+    filter: blur(100px);
+    background: radial-gradient(
+      circle,
+      rgb(var(--amber) / var(--glow-alpha)) 0%,
+      rgb(var(--amber) / 0) 70%
+    );
+    pointer-events: none;
+  }
+
+  /* Theme-aware soft elevation for standalone cards */
+  .lift {
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.35s ease, transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+      border-color 0.3s ease;
+  }
+  .lift:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .font-display {
+    font-family: var(--font-display), system-ui, sans-serif;
+  }
+  .hairline {
+    border-color: var(--line);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

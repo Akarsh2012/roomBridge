@@ -6,7 +6,9 @@ import { sendOtpEmail, sendWelcomeEmail } from "../../utils/sendEmails";
 const OTP_EXPIRY_MINUTES = 5;
 const RESEND_COOLDOWN_SECONDS = 60;
 
-export const sendOtpToUser = async (userId: string) => {
+// ─── Service Functions ───────────────────────────────
+
+async function sendOtpToUser(userId: string) {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) throw new AppError("User not found", 404);
   if (user.emailVerified) throw new AppError("Email already verified", 400);
@@ -47,9 +49,9 @@ export const sendOtpToUser = async (userId: string) => {
     expiresIn: OTP_EXPIRY_MINUTES * 60,
     cooldown: RESEND_COOLDOWN_SECONDS,
   };
-};
+}
 
-export const verifyUserOtp = async (userId: string, otp: string) => {
+async function verifyUserOtp(userId: string, otp: string) {
   if (!otp || typeof otp !== "string" || otp.length !== 6) {
     throw new AppError("Please enter a valid 6-digit OTP", 400);
   }
@@ -88,4 +90,13 @@ export const verifyUserOtp = async (userId: string, otp: string) => {
   } catch (emailErr) {
     console.error(`[VERIFY-OTP] Welcome email failed:`, emailErr);
   }
+}
+
+// ─── Exports ─────────────────────────────────────────
+
+module.exports = {
+  sendOtpToUser,
+  verifyUserOtp,
 };
+
+export { sendOtpToUser, verifyUserOtp };

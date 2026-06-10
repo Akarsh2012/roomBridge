@@ -5,15 +5,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgb(var(--ink) / 0.7);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   animation: overlayIn 0.25s ease forwards;
 }
 
-/* Initial load — no page behind, so use solid white */
+/* Initial load — no page behind, so use solid canvas */
 .overlayInitial {
-  background: #ffffff;
+  background: rgb(var(--ink));
   backdrop-filter: none;
 }
 
@@ -23,9 +23,10 @@
   align-items: center;
   gap: 1rem;
   padding: 2.5rem 3rem;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--glass-strong);
+  border: 1px solid var(--line);
   border-radius: 1.5rem;
-  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.8);
+  box-shadow: 0 30px 60px rgb(var(--paper) / 0.12);
   animation: contentIn 0.3s ease forwards;
 }
 
@@ -34,25 +35,27 @@
   width: 56px;
   height: 56px;
   border-radius: 0.875rem;
-  background: linear-gradient(135deg, #312e81, #4f46e5);
+  background: rgb(var(--ink-3));
+  border: 1px solid var(--line);
   display: flex;
   align-items: center;
   justify-content: center;
   animation: pulse 2s ease-in-out infinite;
-  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 8px 28px rgb(var(--amber) / 0.2);
 }
 
 .logo {
   width: 30px;
   height: 30px;
-  color: #ffffff;
+  color: rgb(var(--amber));
 }
 
 /* Brand name */
 .brand {
+  font-family: var(--font-display), system-ui, sans-serif;
   font-size: 1.25rem;
   font-weight: 700;
-  color: #312e81;
+  color: rgb(var(--paper));
   letter-spacing: -0.025em;
 }
 
@@ -60,7 +63,7 @@
 .spinnerTrack {
   width: 140px;
   height: 3px;
-  background: rgba(79, 70, 229, 0.12);
+  background: rgb(var(--paper) / 0.1);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -68,7 +71,12 @@
 .spinnerBar {
   width: 40%;
   height: 100%;
-  background: linear-gradient(90deg, #312e81, #4f46e5, #818cf8);
+  background: linear-gradient(
+    90deg,
+    rgb(var(--amber-deep)),
+    rgb(var(--amber)),
+    rgb(var(--amber-hi))
+  );
   border-radius: 999px;
   animation: slide 1.2s ease-in-out infinite;
 }
@@ -88,11 +96,11 @@
 @keyframes pulse {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+    box-shadow: 0 8px 24px rgb(var(--amber) / 0.18);
   }
   50% {
     transform: scale(1.06);
-    box-shadow: 0 12px 28px rgba(79, 70, 229, 0.4);
+    box-shadow: 0 14px 34px rgb(var(--amber) / 0.32);
   }
 }
 

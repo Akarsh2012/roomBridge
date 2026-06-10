@@ -6,7 +6,6 @@ import {
   register as registerApi,
   getMe,
   logout as logoutApi,
-  becomeHost as becomeHostApi,
   User,
   LoginPayload,
   RegisterPayload,
@@ -20,7 +19,6 @@ interface AuthContextType {
   login: (payload: LoginPayload) => Promise<User>;
   register: (payload: RegisterPayload) => Promise<User>;
   logout: () => Promise<void>;
-  becomeHost: () => Promise<User>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -97,17 +95,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const becomeHost = async (): Promise<User> => {
-    return withMinDelay(async () => {
-      const data = await becomeHostApi();
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("refreshToken", data.refreshToken);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      setUser(data.user);
-      return data.user;
-    });
-  };
-
   const logout = async () => {
     await withMinDelay(async () => {
       try {
@@ -135,11 +122,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         register,
         logout,
-        becomeHost,
       }}
     >
       {isActionLoading && <Loader />}
-      {isLoading ? <Loader initial /> : children}
+      {children}
     </AuthContext.Provider>
   );
 }
