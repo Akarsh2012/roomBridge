@@ -15,6 +15,12 @@ enum Role {
   ADMIN
 }
 
+enum RoomStatus {
+  PENDING   // submitted by host, waiting on admin review
+  APPROVED  // admin verified — eligible to appear publicly
+  REJECTED  // admin declined — host can fix and resubmit
+}
+
 enum BookingStatus {
   PENDING
   CONFIRMED
@@ -38,6 +44,7 @@ model User {
   updatedAt     DateTime @updatedAt
 
   rooms         Room[]
+  roomsReviewed Room[]         @relation("RoomModerator")
   bookings      Booking[]
   reviews       Review[]
   refreshTokens RefreshToken[]
@@ -82,6 +89,17 @@ model Room {
   bathrooms   Int      @default(1)
   amenities   String[] @default([])
   images      String[] @default([])
+
+  // ── Moderation ──
+  // `status` is the ADMIN verdict, `isActive` is the HOST's own pause switch.
+  // A room is publicly visible only when status = APPROVED AND isActive = true.
+  status          RoomStatus @default(PENDING)
+  rejectionReason String?
+  submittedAt     DateTime   @default(now())
+  reviewedAt      DateTime?
+  reviewedById    String?
+  reviewedBy      User?      @relation("RoomModerator", fields: [reviewedById], references: [id])
+
   isActive    Boolean  @default(true)
   hostId      String
   host        User     @relation(fields: [hostId], references: [id])
@@ -90,6 +108,11 @@ model Room {
 
   bookings Booking[]
   reviews  Review[]
+
+  // Moderation queue is read as "oldest pending first"
+  @@index([status, isActive])
+  @@index([hostId])
+  @@index([city])
 }
 
 // ─── Booking ─────────────────────────────────────────

@@ -13,4 +13,25 @@ export const env = {
   SMTP_EMAIL: process.env.SMTP_EMAIL!,
   SMTP_PASSWORD: process.env.SMTP_PASSWORD!,
   CLIENT_URL: process.env.CLIENT_URL || "http://localhost:3000",
+  CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME!,
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY!,
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET!,
 };
+
+// Fail fast at boot rather than at the first upload attempt.
+const required = [
+  "DATABASE_URL",
+  "JWT_SECRET",
+  "JWT_REFRESH_SECRET",
+  "CLOUDINARY_CLOUD_NAME",
+  "CLOUDINARY_API_KEY",
+  "CLOUDINARY_API_SECRET",
+] as const;
+
+const missing = required.filter((key) => !env[key]);
+if (missing.length) {
+  throw new Error(
+    `Missing required environment variables: ${missing.join(", ")}. ` +
+      `Copy .env.example to .env and fill them in.`
+  );
+}

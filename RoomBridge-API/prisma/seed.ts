@@ -1,3 +1,6 @@
+// `npm run seed` runs this through ts-node directly, which (unlike the Prisma CLI)
+// does not load .env for us.
+import "dotenv/config";
 import { PrismaClient } from "../src/generated/prisma/client";
 import bcrypt from "bcryptjs";
 
@@ -19,6 +22,7 @@ async function main() {
       name: "Admin User",
       email: "admin@roombridge.com",
       password,
+      emailVerified: true,
       role: "ADMIN",
       bio: "Platform administrator",
     },
@@ -29,6 +33,7 @@ async function main() {
       name: "Rahul Sharma",
       email: "rahul@roombridge.com",
       password,
+      emailVerified: true,
       bio: "Property owner in Mumbai with 5 years of hosting experience",
       phone: "+91-9876543210",
     },
@@ -39,6 +44,7 @@ async function main() {
       name: "Priya Patel",
       email: "priya@roombridge.com",
       password,
+      emailVerified: true,
       bio: "Superhost managing premium properties across Goa",
       phone: "+91-9876543211",
     },
@@ -49,11 +55,13 @@ async function main() {
       name: "Akarsh Guest",
       email: "guest@roombridge.com",
       password,
+      emailVerified: true,
       bio: "Love traveling and exploring new places",
     },
   });
 
-  // Create rooms
+  // Create rooms — seeded listings represent inventory an admin has already vetted,
+  // so they skip the PENDING moderation queue and are live immediately.
   const rooms = await Promise.all([
     prisma.room.create({
       data: {
@@ -68,6 +76,8 @@ async function main() {
         bathrooms: 1,
         amenities: ["WiFi", "AC", "Kitchen", "Washing Machine", "TV"],
         images: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267"],
+        status: "APPROVED",
+        reviewedAt: new Date(),
         hostId: host1.id,
       },
     }),
@@ -84,6 +94,8 @@ async function main() {
         bathrooms: 2,
         amenities: ["WiFi", "AC", "Pool", "Kitchen", "Parking", "Beach Access", "Garden"],
         images: ["https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf"],
+        status: "APPROVED",
+        reviewedAt: new Date(),
         hostId: host2.id,
       },
     }),
@@ -100,6 +112,8 @@ async function main() {
         bathrooms: 1,
         amenities: ["WiFi", "AC", "TV", "Elevator", "Security"],
         images: ["https://images.unsplash.com/photo-1502672260266-1c1ef2d93688"],
+        status: "APPROVED",
+        reviewedAt: new Date(),
         hostId: host1.id,
       },
     }),
@@ -116,6 +130,8 @@ async function main() {
         bathrooms: 1,
         amenities: ["WiFi", "AC", "Breakfast", "Rooftop", "Heritage"],
         images: ["https://images.unsplash.com/photo-1590490360182-c33d955e5b5e"],
+        status: "APPROVED",
+        reviewedAt: new Date(),
         hostId: host2.id,
       },
     }),
@@ -132,6 +148,8 @@ async function main() {
         bathrooms: 2,
         amenities: ["WiFi", "AC", "Kitchen", "Gym", "Terrace", "Home Theater", "Parking"],
         images: ["https://images.unsplash.com/photo-1560448204-e02f11c3d0e2"],
+        status: "APPROVED",
+        reviewedAt: new Date(),
         hostId: host1.id,
       },
     }),
@@ -148,6 +166,8 @@ async function main() {
         bathrooms: 1,
         amenities: ["WiFi", "AC", "Bicycle", "Beach Access", "Garden"],
         images: ["https://images.unsplash.com/photo-1499793983690-e29da59ef1c2"],
+        status: "APPROVED",
+        reviewedAt: new Date(),
         hostId: host2.id,
       },
     }),
@@ -164,6 +184,8 @@ async function main() {
         bathrooms: 1,
         amenities: ["WiFi", "Fireplace", "Mountain View", "Kitchen", "Parking", "Heater"],
         images: ["https://images.unsplash.com/photo-1510798831971-661eb04b3739"],
+        status: "APPROVED",
+        reviewedAt: new Date(),
         hostId: host1.id,
       },
     }),
@@ -180,18 +202,141 @@ async function main() {
         bathrooms: 1,
         amenities: ["All Meals", "AC", "Deck", "Backwater Cruise", "Sunset View"],
         images: ["https://images.unsplash.com/photo-1602002418816-5c0aeef426aa"],
+        status: "APPROVED",
+        reviewedAt: new Date(),
         hostId: host2.id,
       },
     }),
   ]);
 
+
+  // ── Listings in the other moderation states ──────────────────
+  // So the admin queue is never empty on a fresh database and every state is testable.
+  const pendingAndRejected = await Promise.all([
+    prisma.room.create({
+      data: {
+        title: "Skyline Loft with Private Terrace",
+        description:
+          "A sunlit loft on the 11th floor with a private terrace overlooking the city skyline. Walking distance to the metro, cafes and the Sunday flea market.",
+        price: 4200,
+        location: "Indiranagar",
+        address: "12, 100ft Road, Indiranagar",
+        city: "Bangalore",
+        maxGuests: 3,
+        bedrooms: 1,
+        bathrooms: 1,
+        amenities: ["WiFi", "AC", "Kitchen", "Balcony", "Workspace"],
+        images: ["https://images.unsplash.com/photo-1502672260266-1c1ef2d93688"],
+        status: "PENDING",
+        hostId: host1.id,
+      },
+    }),
+    prisma.room.create({
+      data: {
+        title: "Garden Studio near Fort Kochi",
+        description:
+          "A quiet studio opening onto a shared garden, five minutes from the Chinese fishing nets. Ideal for a slow, unhurried few days by the water.",
+        price: 2800,
+        location: "Fort Kochi",
+        address: "Burgher Street",
+        city: "Kochi",
+        maxGuests: 2,
+        bedrooms: 1,
+        bathrooms: 1,
+        amenities: ["WiFi", "Breakfast", "Garden"],
+        images: ["https://images.unsplash.com/photo-1560448204-e02f11c3d0e2"],
+        status: "PENDING",
+        hostId: host2.id,
+      },
+    }),
+    prisma.room.create({
+      data: {
+        title: "Budget Room near Station",
+        description:
+          "A simple room close to the railway station. Basic amenities, suitable for a short overnight stop between trains.",
+        price: 900,
+        location: "Station Road",
+        address: "Near Platform 1",
+        city: "Mumbai",
+        maxGuests: 2,
+        bedrooms: 1,
+        bathrooms: 1,
+        amenities: ["Fan"],
+        images: ["https://images.unsplash.com/photo-1505693416388-ac5ce068fe85"],
+        status: "REJECTED",
+        rejectionReason:
+          "The photos do not show the actual room being listed, and the description is missing key details about shared facilities. Please upload real photos of the room and expand the description, then resubmit.",
+        reviewedAt: new Date(),
+        reviewedById: admin.id,
+        hostId: host1.id,
+      },
+    }),
+  ]);
+
+  // The guest account hosts too — any verified user can list on RoomBridge.
+  const guestRooms = await Promise.all([
+    prisma.room.create({
+      data: {
+        title: "Sunny Attic Room in Old Goa",
+        description:
+          "A bright attic room in a Portuguese-era house, with wooden beams and a view over the coconut palms. Breakfast included, bicycles available.",
+        price: 2200,
+        location: "Old Goa",
+        address: "Rua de Ourem",
+        city: "Goa",
+        maxGuests: 2,
+        bedrooms: 1,
+        bathrooms: 1,
+        amenities: ["WiFi", "Breakfast", "Balcony", "Pet Friendly"],
+        images: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267"],
+        status: "APPROVED",
+        reviewedAt: new Date(),
+        reviewedById: admin.id,
+        hostId: guest.id,
+      },
+    }),
+    prisma.room.create({
+      data: {
+        title: "Riverside Tent Stay in Rishikesh",
+        description:
+          "Canvas tents pitched on the riverbank, a short walk from the rapids. Bonfire every evening, rafting and trekking can be arranged on request.",
+        price: 1800,
+        location: "Shivpuri",
+        address: "Camp Ground 4, Shivpuri",
+        city: "Rishikesh",
+        maxGuests: 4,
+        bedrooms: 1,
+        bathrooms: 1,
+        amenities: ["Breakfast", "Power Backup"],
+        images: ["https://images.unsplash.com/photo-1504280390367-361c6d9f38f4"],
+        status: "PENDING",
+        hostId: guest.id,
+      },
+    }),
+  ]);
+
+  // ── Reviews on approved listings ─────────────────────────────
+  await prisma.review.createMany({
+    data: [
+      { rating: 5, comment: "Spotless, exactly as pictured, and the host left us a handwritten note. Would stay again without hesitation.", roomId: rooms[0].id, userId: guest.id },
+      { rating: 4, comment: "Great location and very comfortable. The street outside gets a little loud in the evening, but the AC drowns it out.", roomId: rooms[0].id, userId: host2.id },
+      { rating: 5, comment: "Waking up to that view was worth the trip on its own. The fireplace made the cold evenings genuinely cosy.", roomId: rooms[2].id, userId: guest.id },
+      { rating: 5, comment: "The houseboat crew were wonderful and the food kept coming. A slow, beautiful two days on the backwaters.", roomId: rooms[7].id, userId: guest.id },
+      { rating: 4, comment: "Clean, well kept and a two-minute walk to the beach. Wifi was patchy but we barely needed it.", roomId: rooms[1].id, userId: host1.id },
+      { rating: 5, comment: "Beautifully restored old house with a lot of character. The host gave us excellent food recommendations.", roomId: guestRooms[0].id, userId: host1.id },
+    ],
+  });
+
+  const totalRooms = rooms.length + pendingAndRejected.length + guestRooms.length;
+
   console.log("Seed complete!");
-  console.log(`Created: ${1} admin, ${2} hosts, ${1} guest, ${rooms.length} rooms`);
+  console.log(`Created: 4 users, ${totalRooms} rooms, 6 reviews`);
+  console.log("  approved:", rooms.length + 1, "| pending: 3 | rejected: 1");
   console.log("\nLogin credentials (all users): password123");
-  console.log("Admin:  admin@roombridge.com");
-  console.log("Host 1: rahul@roombridge.com");
-  console.log("Host 2: priya@roombridge.com");
-  console.log("Guest:  guest@roombridge.com");
+  console.log("Admin:  admin@roombridge.com  — review queue has 3 pending listings");
+  console.log("Host 1: rahul@roombridge.com  — 4 approved, 1 pending, 1 rejected");
+  console.log("Host 2: priya@roombridge.com  — 4 approved, 1 pending");
+  console.log("Guest:  guest@roombridge.com  — 1 approved, 1 pending, wrote 3 reviews");
 }
 
 main()

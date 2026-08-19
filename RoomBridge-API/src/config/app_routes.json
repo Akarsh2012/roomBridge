@@ -23,7 +23,9 @@
         "GET_ROOM_BY_ID": "/:id",
         "UPDATE_ROOM": "/:id",
         "DELETE_ROOM": "/:id",
-        "UPLOAD_IMAGES": "/:id/images"
+        "RESUBMIT_ROOM": "/:id/resubmit",
+        "UPLOAD_IMAGES": "/:id/images",
+        "DELETE_IMAGE": "/:id/images"
       }
     },
     "booking": {
@@ -41,6 +43,15 @@
         "CREATE_REVIEW": "/rooms/:roomId/reviews",
         "GET_ROOM_REVIEWS": "/rooms/:roomId/reviews",
         "DELETE_REVIEW": "/:id"
+      }
+    },
+    "admin": {
+      "routes": {
+        "GET_STATS": "/stats",
+        "GET_ROOMS": "/rooms",
+        "APPROVE_ROOM": "/rooms/:id/approve",
+        "REJECT_ROOM": "/rooms/:id/reject",
+        "GET_USERS": "/users"
       }
     }
   }

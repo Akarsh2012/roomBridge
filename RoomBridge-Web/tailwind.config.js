@@ -7,6 +7,18 @@ module.exports = {
   ],
   theme: {
     extend: {
+      /* Listing-grid breakpoints, mirroring Airbnb's own column steps.
+         Tailwind's defaults (640/768/1024/1280/1536) put the jumps in the wrong
+         places for a dense card grid, so these are added alongside them and used
+         ONLY by the rooms grid: 2 cols on phones -> 7 on a wide desktop.
+         Declared in ascending order — Tailwind emits them in config order. */
+      screens: {
+        c3: "550px",
+        c4: "744px",
+        c5: "950px",
+        c6: "1128px",
+        c7: "1440px",
+      },
       colors: {
         /* Driven by CSS variables (see styles/globals.css) so utilities
            re-resolve per [data-theme]. ink = canvas, paper = text,

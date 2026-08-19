@@ -22,6 +22,7 @@ export default function Navbar() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const isAdmin = user?.role === "ADMIN";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
@@ -55,7 +56,9 @@ export default function Navbar() {
         {/* Desktop links group */}
         <div className="hidden items-center gap-0.5 rounded-full border border-line bg-ink/40 p-1 lg:flex">
           <NavLink href="/rooms">Stays</NavLink>
+          {isAuthenticated && <NavLink href="/dashboard/listings">My listings</NavLink>}
           {isAuthenticated && <NavLink href="/rooms/new">List a room</NavLink>}
+          {isAdmin && <NavLink href="/admin">Review</NavLink>}
         </div>
 
         {/* Desktop actions */}
@@ -70,6 +73,11 @@ export default function Navbar() {
                 <span className="hidden text-sm font-medium text-paper lg:block">
                   {user?.name?.split(" ")[0]}
                 </span>
+                {isAdmin && (
+                  <span className="hidden font-mono text-[0.6rem] uppercase tracking-[0.14em] text-amber lg:block">
+                    Admin
+                  </span>
+                )}
               </div>
               <button
                 onClick={handleLogout}
@@ -121,7 +129,13 @@ export default function Navbar() {
           <MobileLink href="/rooms" onClick={() => setMenuOpen(false)}>Stays</MobileLink>
           {isAuthenticated ? (
             <>
+              <MobileLink href="/dashboard/listings" onClick={() => setMenuOpen(false)}>My listings</MobileLink>
               <MobileLink href="/rooms/new" onClick={() => setMenuOpen(false)}>List a room</MobileLink>
+              {isAdmin && (
+                <MobileLink href="/admin" onClick={() => setMenuOpen(false)}>
+                  Review queue
+                </MobileLink>
+              )}
               <div className="mt-2 flex items-center gap-3 border-t border-line py-3">
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-amber text-sm font-bold text-ink">
                   {user?.name?.charAt(0).toUpperCase()}

@@ -222,6 +222,189 @@ body {
   .lift:hover {
     box-shadow: var(--shadow-card-hover);
   }
+
+  /* ── Surfaces ─────────────────────────────────────────────
+     Gradient-lit card. The wash is subtle in light and does the
+     heavy lifting in dark, where flat panels read as dead space. */
+  .surface {
+    background-image: linear-gradient(
+      160deg,
+      rgb(var(--ink-2)) 0%,
+      rgb(var(--ink-2)) 46%,
+      rgb(var(--ink-3) / 0.72) 100%
+    );
+    border: 1px solid var(--line);
+  }
+
+  /* Accent-washed panel for hero/summary blocks */
+  .surface-accent {
+    background-image: linear-gradient(
+      150deg,
+      rgb(var(--amber) / 0.14) 0%,
+      rgb(var(--ink-2)) 42%,
+      rgb(var(--ink-3) / 0.7) 100%
+    );
+    border: 1px solid var(--line);
+  }
+
+  /* ── Form fields ──────────────────────────────────────────
+     16px min font-size on mobile: anything smaller makes iOS Safari
+     zoom the whole page on focus, which reads as a layout glitch. */
+  .field {
+    width: 100%;
+    border-radius: 0.875rem;
+    border: 1px solid var(--line-strong);
+    background: rgb(var(--ink-2) / 0.75);
+    padding: 0.75rem 0.95rem;
+    font-size: 16px;
+    color: rgb(var(--paper));
+    transition: border-color 0.25s ease, box-shadow 0.25s ease,
+      background 0.25s ease;
+  }
+  .field::placeholder {
+    color: rgb(var(--faint));
+  }
+  .field:focus {
+    outline: none;
+    border-color: rgb(var(--amber) / 0.65);
+    background: rgb(var(--ink-2));
+    box-shadow: 0 0 0 3px rgb(var(--amber) / 0.16);
+  }
+  .field:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  .field-error {
+    border-color: rgb(220 68 51 / 0.75);
+  }
+  .field-error:focus {
+    border-color: rgb(220 68 51 / 0.85);
+    box-shadow: 0 0 0 3px rgb(220 68 51 / 0.16);
+  }
+  @media (min-width: 640px) {
+    .field {
+      font-size: 0.925rem;
+    }
+  }
+
+  .label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-family: var(--font-mono), monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgb(var(--muted));
+  }
+
+  /* ── Chips ────────────────────────────────────────────────
+     min-height 44px keeps every chip a legal touch target. */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: 2.5rem;
+    white-space: nowrap;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: rgb(var(--ink-2) / 0.7);
+    padding: 0.5rem 0.9rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: rgb(var(--muted));
+    transition: border-color 0.25s ease, color 0.25s ease,
+      background 0.25s ease;
+  }
+  .chip:hover {
+    border-color: var(--line-strong);
+    color: rgb(var(--paper));
+  }
+  .chip-active {
+    border-color: transparent;
+    background-image: linear-gradient(
+      180deg,
+      rgb(var(--amber-hi)) 0%,
+      rgb(var(--amber)) 60%,
+      rgb(var(--amber-deep)) 100%
+    );
+    color: var(--btn-amber-fg);
+    font-weight: 600;
+    box-shadow: 0 6px 16px -8px rgb(var(--amber) / 0.65);
+  }
+  .chip-active:hover {
+    color: var(--btn-amber-fg);
+  }
+
+  /* ── Moderation status badges ─────────────────────────────── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-radius: 999px;
+    border: 1px solid;
+    padding: 0.28rem 0.7rem;
+    font-family: var(--font-mono), monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .badge-pending {
+    border-color: rgb(214 158 46 / 0.4);
+    background: rgb(214 158 46 / 0.13);
+    color: rgb(166 116 20);
+  }
+  .badge-approved {
+    border-color: rgb(34 133 92 / 0.4);
+    background: rgb(34 133 92 / 0.13);
+    color: rgb(24 111 76);
+  }
+  .badge-rejected {
+    border-color: rgb(198 56 44 / 0.4);
+    background: rgb(198 56 44 / 0.13);
+    color: rgb(178 45 34);
+  }
+  .badge-paused {
+    border-color: var(--line-strong);
+    background: rgb(var(--ink-4) / 0.4);
+    color: rgb(var(--muted));
+  }
+  [data-theme="dark"] .badge-pending {
+    color: rgb(238 190 96);
+  }
+  [data-theme="dark"] .badge-approved {
+    color: rgb(110 214 168);
+  }
+  [data-theme="dark"] .badge-rejected {
+    color: rgb(248 141 130);
+  }
+}
+
+@layer utilities {
+  /* Horizontal scrollers (filter rails, galleries) without a visible bar */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Respect the iOS home indicator on sticky bottom bars */
+  .pb-safe {
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+
+  /* Snap rail for mobile image galleries */
+  .snap-rail {
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+  }
+  .snap-item {
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
 }
 
 @layer utilities {

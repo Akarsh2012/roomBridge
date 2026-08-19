@@ -2,8 +2,10 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api",
-  headers: { "Content-Type": "application/json" },
-  timeout: 5000, // 5 second timeout — don't hang if backend is down
+  // No default Content-Type on purpose: axios already sends application/json for plain
+  // objects, and pinning it here would clobber the multipart boundary that FormData
+  // (room image uploads) needs.
+  timeout: 15000, // don't hang if the backend is down
 });
 
 // Attach access token to every request
